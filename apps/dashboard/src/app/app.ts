@@ -61,7 +61,13 @@ export class App {
 
   loadTasks() {
     this.api.getTasks().subscribe({
-      next: (data) => (this.tasks = data),
+      next: (data) => {
+        // Ensure all tasks have a category for display
+        this.tasks = data.map((task) => ({
+          ...task,
+          category: task.category || 'work',
+        }));
+      },
       error: (err) => {
         console.error('Failed to load tasks', err);
         this.tasks = [];
