@@ -81,14 +81,20 @@ export class App {
 
   loadUsers() {
     this.api.getUsers().subscribe({
-      next: (data) => (this.users = data),
+      next: (data) => {
+        console.log('Users loaded:', data);
+        this.users = data;
+      },
       error: (err) => console.error('Failed to load users', err),
     });
   }
 
   loadOrganisations() {
     this.api.getOrganisations().subscribe({
-      next: (data) => (this.organisations = data),
+      next: (data) => {
+        console.log('Organisations loaded:', data);
+        this.organisations = data;
+      },
       error: (err) => console.error('Failed to load organisations', err),
     });
   }

@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
-import { provideHttpClient, withInterceptors } from '@angular/common/http'; 
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { mockAuthInterceptor } from './interceptors/mock-auth.interceptors';
 
 export const appConfig: ApplicationConfig = {
@@ -13,8 +13,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
-    provideHttpClient(
-      withInterceptors([mockAuthInterceptor]) 
-    ),
+    provideHttpClient(withInterceptors([mockAuthInterceptor])),
   ],
 };
