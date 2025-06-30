@@ -48,6 +48,10 @@ export class App {
   private authService = inject(MockAuthService);
 
   constructor() {
+    // Load dark mode preference from localStorage
+    const darkPref = localStorage.getItem('isDarkMode');
+    this.isDarkMode = darkPref === 'true';
+
     this.authService.setRole(this.currentRole);
 
     this.authService.role$.subscribe((role) => {
@@ -150,6 +154,7 @@ export class App {
 
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
+    localStorage.setItem('isDarkMode', String(this.isDarkMode));
   }
 
   startEditTask(task: Task) {
