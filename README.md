@@ -1,82 +1,261 @@
-# AngularMonorepo
+# Angular Monorepo
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+---
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## ✨ Features
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+- **Modern Angular Dashboard**: Responsive UI with Tailwind CSS, dark mode toggle, and improved UX.
+- **Task Management**: Sorting, filtering, categorization, and drag-and-drop reordering (Angular CDK).
+- **Role-Based Access Control**: Owner/Admin/Viewer roles enforced in both UI and backend (RBAC).
+- **Inline Editing**: Edit tasks directly in the dashboard for non-Viewer roles.
+- **Audit Log**: View audit log entries from the backend.
+- **Comprehensive Testing**: Jest tests for backend (controllers, services, RBAC) and frontend (UI, logic, role-based access, sorting, editing). E2E scaffolding present.
 
-## Finish your CI setup
+---
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/RJvpXY6YY5)
+## 🚀 Setup Instructions
 
+1. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+2. **Database setup:**
+   - Uses SQLite by default (`db.sqlite`). No manual setup required for development.
+   - For production, configure your preferred database in TypeORM config or environment variables.
+3. **Environment variables:**
+   - Create a `.env` file if needed for secrets, DB config, etc.
 
-## Run tasks
+---
 
-To run the dev server for your app, use:
+## 🖥️ How to Run
 
-```sh
-npx nx serve dashboard
-```
-
-To create a production bundle:
-
-```sh
-npx nx build dashboard
-```
-
-To see all available targets to run for a project, run:
-
-```sh
-npx nx show project dashboard
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
+### Backend (NestJS API)
 
 ```sh
-npx nx g @nx/angular:app demo
+nx serve api
 ```
 
-To generate a new library, use:
+- Runs on [http://localhost:3333](http://localhost:3333) by default.
+
+### Frontend (Angular Dashboard)
 
 ```sh
-npx nx g @nx/angular:lib mylib
+nx serve dashboard
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+- Runs on [http://localhost:4200](http://localhost:4200) by default.
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
+## 🏗️ Architecture Overview
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- **Monorepo:** Managed by Nx, containing both frontend (Angular) and backend (NestJS) apps.
+- **Apps:**
+  - `api`: NestJS backend (REST API, TypeORM, RBAC)
+  - `dashboard`: Angular frontend (Tailwind CSS, role-based UI, drag-and-drop, inline editing)
+- **E2E:**
+  - `api-e2e`, `dashboard-e2e`: End-to-end test scaffolding (expandable)
+- **Shared Libraries:**
+  - Common code, models, and utilities can be placed in `libs/` (add as needed)
 
-## Install Nx Console
+---
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+## 📦 Monorepo Design
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- **Nx** provides project graph, code sharing, and consistent tooling.
+- **Apps** are isolated but can share code via libraries.
+- **Consistent linting, testing, and build scripts** across all projects.
 
-## Useful links
+---
 
-Learn more:
+## 🧩 Shared Libraries and Core Modules
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- **Common modules:** Guards, decorators, interfaces in `apps/api/src/app/common/`.
+- **Models:** `Task`, `User`, `Organisation`, `Role`, `Permission` in their feature folders.
+- **Frontend models:** In `apps/dashboard/src/app/models/`.
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
+
+## 🗃️ Data Model Explanation
+
+- **User:** Belongs to an Organisation, has a Role.
+- **Organisation:** Contains Users and Tasks.
+- **Task:** Has title, assignee, organisation, category, completed status, and order (for drag-and-drop).
+- **Role:** Owner, Admin, Viewer (can be extended).
+- **Permission:** Linked to roles for access control.
+
+### ERD (Entity Relationship Diagram)
+
+```
+[User] -- (many) ---< [Task] >--- (many) -- [Organisation]
+   |                                 ^
+   |                                 |
+   v                                 |
+ [Role]                         [Category]
+```
+
+_For a full ERD, use a tool like dbdiagram.io or draw.io with the above relationships._
+
+---
+
+## 🔐 Access Control Implementation
+
+- **Roles:** Owner, Admin, Viewer
+- **Permissions:**
+  - Owner/Admin: Can add, edit, delete, and view tasks
+  - Viewer: Can only view tasks
+- **Guards:**
+  - `roles.guard.ts`: Checks user role for each endpoint (Viewer can only GET tasks)
+  - `task-owner.guard.ts`: Ensures only task owners can modify their tasks
+- **Organisations:**
+  - Users and tasks are scoped to organisations
+
+---
+
+## 🏢 How Roles, Permissions, and Orgs Work
+
+- **Role-based UI:**
+  - Only non-Viewer roles see add/edit/delete options in the dashboard
+  - All roles can view tasks
+- **Backend enforcement:**
+  - Guards restrict API access based on user role and organisation
+
+---
+
+## 📚 API Docs
+
+### Get Tasks
+
+`GET /api/tasks`
+
+**Response:**
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Sample Task",
+    "assignedTo": { "id": 2, "name": "Alice" },
+    "organisation": { "id": 1, "name": "Org1" },
+    "category": "work",
+    "completed": false
+  }
+]
+```
+
+---
+
+### Create Task
+
+`POST /api/tasks`
+
+**Request:**
+
+```json
+{
+  "title": "New Task",
+  "assignedTo": { "id": 2 },
+  "organisation": { "id": 1 },
+  "category": "personal"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": 2,
+  "title": "New Task",
+  "assignedTo": { "id": 2, "name": "Alice" },
+  "organisation": { "id": 1, "name": "Org1" },
+  "category": "personal",
+  "completed": false
+}
+```
+
+---
+
+### Audit Log
+
+`GET /api/audit-log`
+
+**Response:**
+
+```json
+["User A created task 1", "User B updated task 2"]
+```
+
+---
+
+## 🔮 Future Considerations
+
+- **Persist drag-and-drop order to backend** for consistent ordering across sessions
+- **Complex Role Delegation:**
+  - Support for custom roles, granular permissions, and delegation chains
+- **Production-Ready Security:**
+  - Implement JWT authentication and refresh tokens
+  - Use HTTPS and secure cookie/session management
+  - Audit logging of all sensitive actions
+  - Rate limiting and brute-force protection
+  - CSRF protection for state-changing endpoints
+  - RBAC caching for performance
+- **Scaling Permission Checks:**
+  - Use in-memory or distributed caching for permission lookups
+  - Optimize DB queries for large orgs and user bases
+- **Scalability:**
+  - Move to a production database (Postgres, MySQL, etc.)
+  - Use caching and background jobs for heavy operations
+- **Testing:**
+  - Expand E2E and integration test coverage
+
+---
+
+## 🧪 Testing Strategy
+
+**Backend (NestJS API):**
+
+- Uses **Jest** for unit and integration tests.
+- Test files are in `apps/api/src/app/**/*.spec.ts`.
+- RBAC logic, controllers, and services are covered.
+- Run all backend tests with:
+  ```sh
+  nx test api
+  ```
+
+**Frontend (Angular Dashboard):**
+
+- Uses **Jest** (with Angular TestBed) for component and state logic tests.
+- Main tests in `apps/dashboard/src/app/app.spec.ts`:
+  - Rendering, role-based UI, filtering, sorting, drag-and-drop, and inline editing are covered.
+- Run all frontend tests with:
+  ```sh
+  nx test dashboard
+  ```
+
+**E2E:**
+
+- Cypress and other e2e tests are scaffolded in `apps/dashboard-e2e` and `apps/api-e2e`.
+- Expand E2E coverage as needed for production.
+
+---
+
+## 🟢 Current Test Coverage
+
+- **Backend:** All core RBAC, controller, and service logic is tested and passing.
+- **Frontend:** Main dashboard component logic and UI are tested and passing.
+- **Role-based UI:** Verified by tests for Owner/Admin/Viewer.
+- **Filtering, sorting, drag-and-drop, and editing:** Covered by new tests.
+
+---
+
+## 📝 How to Add More Tests
+
+- Add new `.spec.ts` files alongside components or services.
+- Use Angular’s TestBed for component tests.
+- Use Jest’s mocking utilities for service and API tests.
+
+---
+
+## ℹ️ Project Status
+
+This project is **stable, modern, and well-documented**. All core features are implemented and tested. See "Future Considerations" for recommended next steps for production or advanced deployments.

@@ -1,0 +1,283 @@
+<div
+  [class.dark]="isDarkMode"
+  class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300"
+>
+  <header class="bg-white dark:bg-gray-800 shadow">
+    <div
+      class="max-w-7xl mx-auto py-4 px-2 sm:py-6 sm:px-4 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4"
+    >
+      <h1
+        class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 text-center sm:text-left"
+      >
+        Task Dashboard
+      </h1>
+      <div
+        class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end"
+      >
+        <label
+          for="role-select"
+          class="mr-2 text-gray-700 dark:text-gray-300 font-medium"
+          >Role:</label
+        >
+        <select
+          id="role-select"
+          [(ngModel)]="currentRole"
+          #roleSelect
+          (change)="onRoleChange(roleSelect.value)"
+          class="border rounded px-2 py-1 bg-white dark:bg-gray-700 dark:text-gray-100 text-gray-800 w-full sm:w-auto"
+        >
+          <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+        </select>
+        <button
+          (click)="toggleDarkMode()"
+          class="ml-4 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+        >
+          <span *ngIf="!isDarkMode">🌙 Dark</span>
+          <span *ngIf="isDarkMode">☀️ Light</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main
+    class="flex-1 flex flex-col items-center justify-center px-2 sm:px-0 bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
+  >
+    <div
+      class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-8 w-full max-w-md sm:max-w-xl mt-6 sm:mt-10"
+    >
+      <h2
+        class="text-lg sm:text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100"
+      >
+        Add Task
+      </h2>
+      <form
+        *ngIf="currentRole !== 'Viewer'"
+        (submit)="addTask($event)"
+        class="flex flex-col gap-3 sm:gap-4 mb-8"
+      >
+        <input
+          type="text"
+          [(ngModel)]="newTaskTitle"
+          name="title"
+          placeholder="New Task"
+          required
+          class="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-base bg-white dark:bg-gray-700 dark:text-gray-100"
+        />
+        <select
+          [(ngModel)]="assignedUserId"
+          name="assignedTo"
+          required
+          class="border rounded px-3 py-2 w-full bg-white dark:bg-gray-700 dark:text-gray-100 text-base"
+        >
+          <option [ngValue]="null" disabled selected>Assign To...</option>
+          <option *ngFor="let user of users" [value]="user.id">
+            {{ user.name }}
+          </option>
+        </select>
+        <select
+          [(ngModel)]="selectedOrganisationId"
+          name="organisation"
+          required
+          class="border rounded px-3 py-2 w-full bg-white dark:bg-gray-700 dark:text-gray-100 text-base"
+        >
+          <option [ngValue]="null" disabled selected>
+            Select organisation
+          </option>
+          <option *ngFor="let org of organisations" [value]="org.id">
+            {{ org.name }}
+          </option>
+        </select>
+        <select
+          [(ngModel)]="newTaskCategory"
+          name="category"
+          class="border rounded px-3 py-2 w-full bg-white dark:bg-gray-700 dark:text-gray-100 text-base"
+        >
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of categories" [value]="cat">
+            {{ cat | titlecase }}
+          </option>
+        </select>
+        <button
+          type="submit"
+          class="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-base"
+        >
+          Add Task
+        </button>
+      </form>
+
+      <h2
+        class="text-base sm:text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100 flex items-center justify-between"
+      >
+        Tasks
+        <button
+          (click)="toggleSort()"
+          class="ml-2 px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 transition text-xs"
+        >
+          Sort {{ sortDirection === 'asc' ? '↓' : '↑' }}
+        </button>
+      </h2>
+
+      <div class="flex flex-col sm:flex-row gap-2 mb-4">
+        <input
+          type="text"
+          [(ngModel)]="filterText"
+          placeholder="Filter tasks by title..."
+          class="border rounded px-3 py-2 w-full sm:w-64 bg-white dark:bg-gray-700 dark:text-gray-100 text-base"
+        />
+        <select
+          [(ngModel)]="filterCategory"
+          class="border rounded px-3 py-2 w-full sm:w-48 bg-white dark:bg-gray-700 dark:text-gray-100 text-base"
+        >
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of categories" [value]="cat">
+            {{ cat | titlecase }}
+          </option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <input
+          type="text"
+          [(ngModel)]="filterText"
+          placeholder="Search tasks..."
+          class="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-base bg-white dark:bg-gray-700 dark:text-gray-100"
+        />
+      </div>
+
+      <ul
+        cdkDropList
+        (cdkDropListDropped)="drop($event)"
+        class="divide-y divide-gray-200 dark:divide-gray-700"
+      >
+        <li
+          *ngFor="let task of sortedTasks; let i = index"
+          cdkDrag
+          class="py-2 flex items-center justify-between group bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-move"
+        >
+          <div
+            *ngIf="editTaskId !== task.id; else editForm"
+            class="flex items-center gap-2 w-full"
+          >
+            <input
+              type="checkbox"
+              [(ngModel)]="task.completed"
+              (change)="toggleComplete(task)"
+              class="accent-blue-600"
+            />
+            <span
+              [class.line-through]="task.completed"
+              class="text-gray-900 dark:text-gray-100 text-sm sm:text-base"
+            >
+              {{ task.title }}
+            </span>
+            <span
+              class="ml-2 px-2 py-0.5 rounded text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+              *ngIf="task.category"
+            >
+              {{ task.category | titlecase }}
+            </span>
+            <button
+              *ngIf="currentRole !== 'Viewer'"
+              (click)="startEditTask(task)"
+              class="ml-2 px-2 py-1 rounded bg-yellow-200 dark:bg-yellow-700 text-yellow-900 dark:text-yellow-100 hover:bg-yellow-300 dark:hover:bg-yellow-600 transition text-xs"
+            >
+              Edit
+            </button>
+          </div>
+          <ng-template #editForm>
+            <form
+              (submit)="saveEditTask(task)"
+              class="flex items-center gap-2 w-full"
+            >
+              <input
+                type="text"
+                [(ngModel)]="editTaskTitle"
+                name="editTitle{{ task.id }}"
+                required
+                class="border rounded px-2 py-1 w-24 sm:w-40 bg-white dark:bg-gray-700 dark:text-gray-100 text-sm"
+              />
+              <select
+                [(ngModel)]="editAssignedUserId"
+                name="editAssignedTo{{ task.id }}"
+                required
+                class="border rounded px-2 py-1 w-24 sm:w-32 bg-white dark:bg-gray-700 dark:text-gray-100 text-sm"
+              >
+                <option [value]="''" disabled>Assign To...</option>
+                <option *ngFor="let user of users" [value]="user.id">
+                  {{ user.name }}
+                </option>
+              </select>
+              <select
+                [(ngModel)]="editOrganisationId"
+                name="editOrganisation{{ task.id }}"
+                required
+                class="border rounded px-2 py-1 w-24 sm:w-32 bg-white dark:bg-gray-700 dark:text-gray-100 text-sm"
+              >
+                <option [value]="''" disabled>Select organisation</option>
+                <option *ngFor="let org of organisations" [value]="org.id">
+                  {{ org.name }}
+                </option>
+              </select>
+              <select
+                [(ngModel)]="editCategory"
+                name="editCategory{{ task.id }}"
+                class="border rounded px-2 py-1 w-20 sm:w-24 bg-white dark:bg-gray-700 dark:text-gray-100 text-sm"
+              >
+                <option value="">All Categories</option>
+                <option *ngFor="let cat of categories" [value]="cat">
+                  {{ cat | titlecase }}
+                </option>
+              </select>
+              <button
+                type="submit"
+                class="px-2 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                (click)="cancelEditTask()"
+                class="px-2 py-1 rounded bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 text-xs hover:bg-gray-400 dark:hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+            </form>
+          </ng-template>
+          <button
+            (click)="deleteTask(task)"
+            class="text-red-500 hover:text-red-700 transition text-lg"
+            title="Delete"
+          >
+            🗑️
+          </button>
+        </li>
+        <li
+          *ngIf="!tasks.length"
+          class="text-gray-400 dark:text-gray-500 text-center py-4 w-full text-sm"
+        >
+          No tasks yet. Add your first task above!
+        </li>
+      </ul>
+
+      <div *ngIf="canViewAuditLog()" class="mb-4">
+        <button
+          (click)="loadAuditLog()"
+          class="py-2 px-4 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition w-full sm:w-auto text-base text-gray-800 dark:text-gray-100"
+        >
+          View Audit Log
+        </button>
+      </div>
+      <ul
+        *ngIf="auditLog.length"
+        class="bg-gray-100 dark:bg-gray-900 rounded p-4 mt-2"
+      >
+        <li
+          *ngFor="let log of auditLog"
+          class="text-xs text-gray-700 dark:text-gray-300"
+        >
+          {{ log }}
+        </li>
+      </ul>
+    </div>
+  </main>
+</div>
