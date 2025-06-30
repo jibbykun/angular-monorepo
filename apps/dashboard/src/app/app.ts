@@ -2,7 +2,11 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  DragDropModule,
+  CdkDragDrop,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { ApiService } from './api/api.service';
 import { Task } from './models/task';
 import { MockAuthService } from './interceptors/mock-auth.service';
@@ -212,5 +216,15 @@ export class App {
 
   drop(event: CdkDragDrop<Task[]>) {
     moveItemInArray(this.tasks, event.previousIndex, event.currentIndex);
+  }
+
+  get completedTasks(): number {
+    return this.tasks.filter((task) => task.completed).length;
+  }
+
+  get completionPercent(): number {
+    return this.tasks.length === 0
+      ? 0
+      : Math.round((this.completedTasks / this.tasks.length) * 100);
   }
 }

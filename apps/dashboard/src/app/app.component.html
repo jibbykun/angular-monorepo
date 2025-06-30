@@ -117,6 +117,25 @@
         </button>
       </h2>
 
+      <!-- Task Completion Visualization -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
+            {{ completedTasks }} of {{ tasks.length }} tasks completed
+          </span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">
+            {{ completionPercent }}%
+          </span>
+        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div
+            class="bg-blue-600 h-3 rounded-full transition-all duration-300"
+            [style.width]="completionPercent + '%'"
+          ></div>
+        </div>
+      </div>
+      <!-- End Task Completion Visualization -->
+
       <div class="flex flex-col sm:flex-row gap-2 mb-4">
         <input
           type="text"
